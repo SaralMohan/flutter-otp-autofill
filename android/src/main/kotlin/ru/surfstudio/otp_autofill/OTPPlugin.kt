@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import androidx.annotation.NonNull;
 import com.google.android.gms.auth.api.credentials.Credential
 import com.google.android.gms.auth.api.credentials.Credentials
@@ -171,7 +172,23 @@ public class OTPPlugin : FlutterPlugin, MethodCallHandler, PluginRegistry.Activi
         }
 
         val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
-        this.activity?.registerReceiver(smsUserConsentBroadcastReceiver, intentFilter, SmsRetriever.SEND_PERMISSION, null)
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.activity?.registerReceiver(
+                smsUserConsentBroadcastReceiver,
+                intentFilter,
+                SmsRetriever.SEND_PERMISSION,
+                null,
+                Context.RECEIVER_EXPORTED,
+            )
+        } else {
+            this.activity?.registerReceiver(
+                smsUserConsentBroadcastReceiver,
+                intentFilter,
+                SmsRetriever.SEND_PERMISSION,
+                null
+            )
+        }
     }
 
     private fun registerSmsRetrieverBroadcastReceiver() {
